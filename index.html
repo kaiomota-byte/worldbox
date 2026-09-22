@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mini WorldBox – protótipo</title>
+  <title>Mini WorldBox – ecossistema</title>
   <link rel="stylesheet" href="style.css">
   <!-- "defer" garante que o HTML já foi lido quando o main.js roda -->
   <script src="main.js" defer></script>
@@ -40,19 +40,39 @@
       </div>
     </header>
 
-    <!-- Painel lateral: terreno, pincel, mundo e estatísticas -->
+    <!-- Painel lateral: terreno, recursos, câmera, poderes, vida, mundo, vilas e estatísticas -->
     <aside class="sidebar">
       <section class="group">
         <h2>Terreno</h2>
-        <!-- Os botões são criados pelo main.js a partir da lista TERRAINS -->
-        <div id="tool-list" class="tool-list tool-list--terrain" role="group" aria-label="Terreno do pincel"></div>
+        <!-- Botões criados pelo main.js a partir de TERRAINS -->
+        <div id="tool-list" class="tool-list" role="group" aria-label="Terreno do pincel"></div>
       </section>
 
       <section class="group">
-        <h2>Poderes</h2>
-        <!-- O botão do Meteoro é criado pelo main.js a partir da lista POWERS -->
-        <div id="power-list" class="tool-list" role="group" aria-label="Poderes"></div>
-        <p class="hint">Clique no mapa para lançar. A explosão mata os habitantes da área.</p>
+        <h2>Recursos</h2>
+        <!-- Botões criados pelo main.js a partir de RESOURCES -->
+        <div id="resource-list" class="tool-list" role="group" aria-label="Recursos do pincel"></div>
+        <p class="hint">Pinta o recurso sobre um terreno compatível (árvore na grama, minérios em montanha/pedra).</p>
+      </section>
+
+      <section class="group">
+        <h2>Câmera</h2>
+        <div id="camera-list" class="tool-list" role="group" aria-label="Ferramentas de câmera"></div>
+        <p class="hint">Arraste com o botão do meio (ou o esquerdo com "Mover" ativo) para navegar. Roda/touchpad move a câmera; Ctrl + roda (ou pinça) dá zoom. Clique no minimapa para saltar de posição.</p>
+      </section>
+
+      <section class="group">
+        <h2>Desastres</h2>
+        <!-- Botões criados pelo main.js a partir de POWERS (grupo "disaster") -->
+        <div id="power-list" class="tool-list" role="group" aria-label="Desastres"></div>
+        <p class="hint">Clique no mapa para lançar. Mata os habitantes da área atingida.</p>
+      </section>
+
+      <section class="group">
+        <h2>Vida</h2>
+        <!-- Botões criados pelo main.js a partir de POWERS (grupo "spawn") -->
+        <div id="spawn-list" class="tool-list" role="group" aria-label="Spawnar habitantes"></div>
+        <p class="hint">Clique no mapa para fazer nascer um humano da classe escolhida, filiado à vila mais próxima.</p>
       </section>
 
       <section class="group">
@@ -62,7 +82,7 @@
           <output id="brush-size-value" for="brush-size">3</output>
           <input id="brush-size" type="range" min="1" max="10" step="1" value="3">
         </label>
-        <p class="hint">Botão direito apaga (água). A roda do mouse muda o tamanho.</p>
+        <p class="hint">Botão direito apaga (água).</p>
       </section>
 
       <section class="group">
@@ -76,6 +96,16 @@
           <span>Mostrar grade</span>
           <kbd>G</kbd>
         </label>
+        <label class="check" for="toggle-territory">
+          <input id="toggle-territory" type="checkbox" checked>
+          <span>Mostrar território</span>
+          <kbd>T</kbd>
+        </label>
+      </section>
+
+      <section class="group">
+        <h2>Vilas</h2>
+        <p id="village-stats">Nenhuma vila fundada ainda.</p>
       </section>
 
       <section class="group">
@@ -85,20 +115,31 @@
       </section>
     </aside>
 
-    <!-- Palco: o canvas é redimensionado pelo main.js para caber aqui -->
+    <!-- Palco: o canvas principal e o minimapa são redimensionados pelo main.js -->
     <main class="stage" id="stage">
       <canvas id="world-canvas" aria-label="Mapa do mundo"></canvas>
+      <canvas id="minimap" width="168" height="168" aria-label="Minimapa do mundo"></canvas>
     </main>
 
     <!-- Barra de status: célula sob o mouse e atalhos -->
     <footer class="statusbar">
       <span id="hover-info" class="statusbar__hover">Passe o mouse sobre o mapa</span>
       <ul class="shortcuts">
-        <li><kbd>1</kbd> a <kbd id="last-terrain-key">8</kbd> escolhem o terreno</li>
+        <li><kbd>1</kbd> a <kbd id="last-terrain-key">8</kbd> terreno</li>
+        <li><kbd>F</kbd> árvore</li>
+        <li><kbd>I</kbd> minério de ferro</li>
+        <li><kbd>O</kbd> minério de pedra</li>
+        <li><kbd>H</kbd> mover câmera</li>
         <li><kbd>M</kbd> meteoro</li>
+        <li><kbd>L</kbd> lava</li>
+        <li><kbd>B</kbd> construtor</li>
+        <li><kbd>E</kbd> explorador</li>
+        <li><kbd>W</kbd> guerreiro</li>
+        <li><kbd>T</kbd> território</li>
+        <li><kbd>G</kbd> grade</li>
         <li><kbd>Espaço</kbd> pausa</li>
         <li><kbd>N</kbd> passo</li>
-        <li><kbd>-</kbd> <kbd>+</kbd> tamanho do pincel</li>
+        <li><kbd>-</kbd> <kbd>+</kbd> pincel</li>
       </ul>
     </footer>
 

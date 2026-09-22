@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mini WorldBox – protótipo</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- "defer" garante que o HTML já foi lido quando o main.js roda -->
+  <script src="main.js" defer></script>
+</head>
+<body>
+  <div class="app">
+
+    <!-- Barra superior: controles do tempo da simulação -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand__mark" aria-hidden="true"></span>
+        <h1 class="brand__name">Mini WorldBox</h1>
+      </div>
+
+      <div class="sim-controls">
+        <button id="btn-pause" class="btn btn--primary" type="button">Pausar</button>
+        <button id="btn-step" class="btn" type="button" title="Avança um tick (N)" disabled>Passo</button>
+
+        <label class="field field--inline" for="speed">
+          <span>Velocidade</span>
+          <input id="speed" type="range" min="1" max="60" step="1" value="10">
+          <output id="speed-value" for="speed">10 ticks/s</output>
+        </label>
+
+        <div class="readout">
+          <span>Tick</span>
+          <strong id="tick-count">0</strong>
+        </div>
+
+        <div class="readout">
+          <span>Habitantes</span>
+          <strong id="inhabitants-count">0</strong>
+        </div>
+      </div>
+    </header>
+
+    <!-- Painel lateral: terreno, pincel, mundo e estatísticas -->
+    <aside class="sidebar">
+      <section class="group">
+        <h2>Terreno</h2>
+        <!-- Os botões são criados pelo main.js a partir da lista TERRAINS -->
+        <div id="tool-list" class="tool-list tool-list--terrain" role="group" aria-label="Terreno do pincel"></div>
+      </section>
+
+      <section class="group">
+        <h2>Poderes</h2>
+        <!-- O botão do Meteoro é criado pelo main.js a partir da lista POWERS -->
+        <div id="power-list" class="tool-list" role="group" aria-label="Poderes"></div>
+        <p class="hint">Clique no mapa para lançar. A explosão mata os habitantes da área.</p>
+      </section>
+
+      <section class="group">
+        <h2>Pincel</h2>
+        <label class="field" for="brush-size">
+          <span>Tamanho</span>
+          <output id="brush-size-value" for="brush-size">3</output>
+          <input id="brush-size" type="range" min="1" max="10" step="1" value="3">
+        </label>
+        <p class="hint">Botão direito apaga (água). A roda do mouse muda o tamanho.</p>
+      </section>
+
+      <section class="group">
+        <h2>Mundo</h2>
+        <div class="button-row">
+          <button id="btn-generate" class="btn" type="button">Gerar mundo</button>
+          <button id="btn-clear" class="btn" type="button">Limpar mapa</button>
+        </div>
+        <label class="check" for="toggle-grid">
+          <input id="toggle-grid" type="checkbox">
+          <span>Mostrar grade</span>
+          <kbd>G</kbd>
+        </label>
+      </section>
+
+      <section class="group">
+        <h2>Composição do mapa</h2>
+        <!-- Linhas criadas pelo main.js -->
+        <ul id="stats" class="stats"></ul>
+      </section>
+    </aside>
+
+    <!-- Palco: o canvas é redimensionado pelo main.js para caber aqui -->
+    <main class="stage" id="stage">
+      <canvas id="world-canvas" aria-label="Mapa do mundo"></canvas>
+    </main>
+
+    <!-- Barra de status: célula sob o mouse e atalhos -->
+    <footer class="statusbar">
+      <span id="hover-info" class="statusbar__hover">Passe o mouse sobre o mapa</span>
+      <ul class="shortcuts">
+        <li><kbd>1</kbd> a <kbd id="last-terrain-key">8</kbd> escolhem o terreno</li>
+        <li><kbd>M</kbd> meteoro</li>
+        <li><kbd>Espaço</kbd> pausa</li>
+        <li><kbd>N</kbd> passo</li>
+        <li><kbd>-</kbd> <kbd>+</kbd> tamanho do pincel</li>
+      </ul>
+    </footer>
+
+  </div>
+</body>
+</html>

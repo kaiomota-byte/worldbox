@@ -234,7 +234,6 @@ resize(width, height) {
     }
 
     this.fill(Terrain.WATER);
-}
 
     this.fill(Terrain.WATER);
 }

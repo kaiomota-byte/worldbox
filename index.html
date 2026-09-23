@@ -87,7 +87,16 @@
 
       <section class="group">
         <h2>Mundo</h2>
-        <div class="button-row">
+        <div class="field-row">
+  <label class="field" for="map-width">
+    <span>Largura</span>
+    <input id="map-width" type="number" min="100" max="6000" step="50" value="4000">
+  </label>
+  <label class="field" for="map-height">
+    <span>Altura</span>
+    <input id="map-height" type="number" min="100" max="6000" step="50" value="4000">
+  </label>
+</div><div class="button-row">
           <button id="btn-generate" class="btn" type="button">Gerar mundo</button>
           <button id="btn-clear" class="btn" type="button">Limpar mapa</button>
         </div>

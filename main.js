@@ -2004,6 +2004,8 @@ class UI {
       terrainList: $('tool-list'),
       resourceList: $('resource-list'),
       cameraList: $('camera-list'),
+      mapWidth: $('map-width'),
+      mapHeight: $('map-height'),
       spawnList: $('spawn-list'),
       powerList: $('power-list'), // agora só os desastres (Meteoro, Lava)
       brushSize: $('brush-size'),
@@ -2042,6 +2044,8 @@ class UI {
     this.refreshTools();
     this.setBrushSize(this.tools.brushSize);
     this.setSpeed(this.simulation.ticksPerSecond);
+    this.el.mapWidth.value = this.world.width;
+    this.el.mapHeight.value = this.world.height;
     this.refreshPauseState();
     this.updateStats();
   }
@@ -2132,12 +2136,34 @@ class UI {
     el.generate.addEventListener('click', () => {
       el.generate.disabled = true;
       el.clear.disabled = true;
+      const { width, height } = this.readMapSize();
       this.simulation.newWorld(() => {
         el.generate.disabled = false;
         el.clear.disabled = false;
-      });
+        const first = this.villages.villages[0];
+        if (first) this.renderer.panTo(first.x - 60, first.y - 40);
+        else this.renderer.centerCamera();
+      }, width, height);
     });
-    el.clear.addEventListener('click', () => this.simulation.clearWorld());
+    el.clear.addEventListener('click', () => {
+      const { width, height } = this.readMapSize();
+      this.simulation.clearWorld(width, height);
+      this.renderer.centerCamera();
+    });
+  }
+
+  readMapSize() {
+    const width = this.clampMapSize(this.el.mapWidth.value, this.world.width);
+    const height = this.clampMapSize(this.el.mapHeight.value, this.world.height);
+    this.el.mapWidth.value = width;
+    this.el.mapHeight.value = height;
+    return { width, height };
+  }
+
+  clampMapSize(value, fallback) {
+    const parsed = Math.round(Number(value));
+    if (!Number.isFinite(parsed)) return fallback;
+    return Math.min(CONFIG.maxMapSize, Math.max(CONFIG.minMapSize, parsed));
   }
 
   bindShortcuts() {

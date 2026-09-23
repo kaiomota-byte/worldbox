@@ -236,6 +236,9 @@ resize(width, height) {
     this.fill(Terrain.WATER);
 }
 
+    this.fill(Terrain.WATER);
+}
+
     this.cells = new Uint8Array(width * height);      // terreno de cada célula
     this.shade = new Int8Array(width * height);        // variação de brilho (só visual)
     this.resources = new Uint8Array(width * height);   // Resource.* de cada célula

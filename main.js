@@ -1926,11 +1926,7 @@ onWheel(event) {
     this.renderer.zoomAt(this.renderer.cellSize * factor, px, py);
 }
     // Roda do mouse ou dois dedos no touchpad: navega pelo mapa.
-    this.renderer.panBy(
-      (event.deltaX * CONFIG.wheelPanSpeed) / this.renderer.cellSize,
-      (event.deltaY * CONFIG.wheelPanSpeed) / this.renderer.cellSize
-    );
-  }
+
 
   /** Aplica o pincel centrado em (cx, cy), em terreno ou em recurso conforme o modo do clique atual. */
   stamp(cx, cy) {

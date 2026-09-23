@@ -44,17 +44,19 @@
  * ========================================================================== */
 const CONFIG = {
   // Mundo
-  gridWidth: 4000,          // colunas do mapa (mundo "massivo")
-  gridHeight: 4000,         // linhas do mapa
-  initialCellSize: 8,       // pixels por célula ao abrir a página
+  gridWidth: 4000,
+  gridHeight: 4000,
+  minMapSize: 100,
+  maxMapSize: 6000,
+  initialCellSize: 8,
   minCellSize: 2,
-  maxCellSize: 28,
-  worldGenRowsPerChunk: 25, // linhas geradas por lote (ver runInChunks): mantém a aba responsiva
+  maxCellSize: 20,
+  worldGenRowsPerChunk: 25,
 
   // Câmera
-  wheelPanSpeed: 1.1,       // sensibilidade do scroll/touchpad ao mover a câmera
-  wheelZoomSpeed: 0.05,     // sensibilidade do Ctrl+roda / pinça no touchpad
-
+  wheelPanSpeed: 1.1,
+  wheelZoomSpeed: 0.0025,
+  
   // Relógio da simulação
   ticksPerSecond: 10,
   minTicksPerSecond: 1,
@@ -212,9 +214,27 @@ function canPlaceResource(terrainId, resourceId) {
  * matriz de objetos e é o que torna um mundo de 16 milhões de células viável.
  * ========================================================================== */
 class World {
-  constructor(width, height) {
+ constructor(width, height) {
+    this.counts = new Uint32Array(TERRAINS.length);
+    this.resourceCounts = new Uint32Array(RESOURCES.length);
+    this.resize(width, height);
+}
+
+resize(width, height) {
     this.width = width;
     this.height = height;
+
+    this.cells = new Uint8Array(width * height);
+    this.shade = new Int8Array(width * height);
+    this.resources = new Uint8Array(width * height);
+    this.traffic = new Uint8Array(width * height);
+
+    for (let i = 0; i < this.shade.length; i++) {
+        this.shade[i] = Math.floor(Math.random() * 15) - 7;
+    }
+
+    this.fill(Terrain.WATER);
+}
 
     this.cells = new Uint8Array(width * height);      // terreno de cada célula
     this.shade = new Int8Array(width * height);        // variação de brilho (só visual)
@@ -1147,6 +1167,7 @@ class Simulation {
   }
 
   /** Gera um mundo novo (em lotes) e, ao terminar, semeia população e vilas iniciais. */
+ // ANTES — apague isso:
   newWorld(onDone = () => {}) {
     this.inhabitants.reset();
     this.villages.reset();
@@ -1158,7 +1179,7 @@ class Simulation {
       onDone();
     });
   }
-
+  
   /** Funda algumas vilas de partida e recruta quem já estiver por perto. */
   seedInitialVillages() {
     const { world, villages, inhabitants } = this;
@@ -1365,6 +1386,17 @@ class Renderer {
     this.cellSize = Math.min(CONFIG.maxCellSize, Math.max(CONFIG.minCellSize, size));
     this.clampCamera();
   }
+
+  zoomAt(newCellSize, screenX, screenY) {
+    const worldX = this.camera.x + screenX / this.cellSize;
+    const worldY = this.camera.y + screenY / this.cellSize;
+
+    this.cellSize = Math.min(CONFIG.maxCellSize, Math.max(CONFIG.minCellSize, newCellSize));
+
+    this.camera.x = worldX - screenX / this.cellSize;
+    this.camera.y = worldY - screenY / this.cellSize;
+    this.clampCamera();
+}
 
   /** Move a câmera em CÉLULAS (não pixels) e garante que ela não saia do mapa. */
   panBy(dxCells, dyCells) {
@@ -1900,13 +1932,15 @@ class Input {
     if (event.pointerType !== 'mouse') this.hover = null; // no toque não há cursor pairando
   }
 
-  onWheel(event) {
+onWheel(event) {
     event.preventDefault();
-    if (event.ctrlKey || event.metaKey) {
-      // Pinça no touchpad (ou Ctrl+roda do mouse): aproxima/afasta.
-      this.renderer.setCellSize(this.renderer.cellSize - event.deltaY * CONFIG.wheelZoomSpeed);
-      return;
-    }
+    const rect = this.canvas.getBoundingClientRect();
+    const px = (event.clientX - rect.left) * (this.canvas.width / rect.width);
+    const py = (event.clientY - rect.top) * (this.canvas.height / rect.height);
+
+    const factor = Math.exp(-event.deltaY * CONFIG.wheelZoomSpeed);
+    this.renderer.zoomAt(this.renderer.cellSize * factor, px, py);
+}
     // Roda do mouse ou dois dedos no touchpad: navega pelo mapa.
     this.renderer.panBy(
       (event.deltaX * CONFIG.wheelPanSpeed) / this.renderer.cellSize,

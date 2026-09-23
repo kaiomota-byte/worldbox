@@ -230,24 +230,6 @@ resize(width, height) {
     this.traffic = new Uint8Array(width * height);
 
     for (let i = 0; i < this.shade.length; i++) {
-        this.shade[i] = Math.floor(Math.random() * 15) - 7;
-    }
-
-    this.fill(Terrain.WATER);
-
-    this.fill(Terrain.WATER);
-}
-
-    this.cells = new Uint8Array(width * height);      // terreno de cada célula
-    this.shade = new Int8Array(width * height);        // variação de brilho (só visual)
-    this.resources = new Uint8Array(width * height);   // Resource.* de cada célula
-    this.traffic = new Uint8Array(width * height);      // tráfego acumulado (estrada quando alto)
-
-    this.counts = new Uint32Array(TERRAINS.length);
-    this.resourceCounts = new Uint32Array(RESOURCES.length);
-
-    // Cada célula ganha um leve desvio de brilho fixo, para o mapa não ficar chapado.
-    for (let i = 0; i < this.shade.length; i++) {
       this.shade[i] = Math.floor(Math.random() * 15) - 7;
     }
 
